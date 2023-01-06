@@ -1,6 +1,27 @@
+using Infra.Data.Caching;
+using Infra.Data.Context;
+using Infra.Data.Interfaces;
+using Infra.Data.Interfaces.Caching;
+using Infra.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Services;
+using Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<ApiRestRedis_Context>(o => o.UseInMemoryDatabase("ApiRestredis"));
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.InstanceName = "instance";
+    options.Configuration = "localhost:6379";
+});
+
+builder.Services.AddScoped<ICachingService, CachingService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICachingService, CachingService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
